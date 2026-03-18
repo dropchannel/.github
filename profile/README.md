@@ -16,10 +16,10 @@ Providers currently implemented: GCS, Dropbox (filesystem sync), local filesyste
 
 | Repo | Description |
 |------|-------------|
-| [`spec`](../spec) | System specification: ChannelProvider interface, protocol registry, dispatch rules, security model |
-| [`winch-protocol`](../winch-protocol) | Winch protocol spec: hold-and-cascade propagation, ACK cascade, node state machine |
-| [`ring-protocol`](../ring-protocol) | Ring protocol spec: rolling window, no ACK — for streaming and telemetry use cases |
-| [`dropchannel-py`](../dropchannel-py) | Python reference implementation: four packages (`dropchannel-channel`, `dropchannel-endpoint`, `dropchannel-node`, `dropchannel-server`) |
+| [`spec`](https://github.com/dropchannel/spec) | System specification: ChannelProvider interface, protocol registry, dispatch rules, security model |
+| [`winch-protocol`](https://github.com/dropchannel/winch-protocol) | Winch protocol spec: hold-and-cascade propagation, ACK cascade, node state machine |
+| `ring-protocol` | Ring protocol spec: rolling window, no ACK — for streaming and telemetry use cases (not yet created) |
+| [`dropchannel-py`](https://github.com/dropchannel/dropchannel-py) | Python reference implementation: four packages (`dropchannel-channel`, `dropchannel-endpoint`, `dropchannel-node`, `dropchannel-server`) |
 
 ## Design principles
 
@@ -37,4 +37,4 @@ Active development. The Python implementation (`dropchannel-py`) has full test c
 
 ## Decisions
 
-Significant architectural decisions are recorded in [`docs/adr/`](docs/adr/README.md).
+Significant architectural decisions are recorded in [`docs/adr/`](../docs/adr/README.md).
