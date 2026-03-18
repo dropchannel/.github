@@ -86,3 +86,11 @@ One ADR per meaningful, non-obvious decision with lasting consequences.
 | 033 | Channel name prefix as protocol dispatch mechanism | Node reads `winch-`, `ring-`, `piston-` prefix to select the coordination state machine; prefix is metadata, not payload | Separate config field per protocol; topology-level protocol assignment |
 | 034 | Unrecognized prefix: halt and log | Node halts with a log entry on an unrecognized channel prefix | Skip and continue (silent data loss), apply default protocol (masks misconfiguration) |
 | 035 | Ring as a separate protocol for streaming use cases | Backpressure is the correct behavior for Winch use cases; streaming/telemetry needs a rolling-window no-ACK protocol; Ring is a sibling, not a Winch variant | Adding a "no-ACK mode" to Winch (conflates two semantically distinct protocols) |
+
+---
+
+## From SPEC_v0.9 — Agent and Worker model for node runtime
+
+| # | Title | Decision | Alternatives considered |
+|---|-------|----------|------------------------|
+| [036](./ADR-036.md) | Agent merged into dropchannel-node rather than separate package |  Merge the Agent into dropchannel-node as an agent/ submodule. Do not create a separate dropchannel-agent package. | Separate dropchannel-agent package (incorrect deployment unit); Threads instead of subprocesses (would have affected placement) |
