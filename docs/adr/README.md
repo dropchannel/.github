@@ -1,7 +1,7 @@
 # DropChannel ADR Master List
 
-Extracted from SPEC_v0.1 through SPEC_v0.6 and naming/architecture sessions.
 One ADR per meaningful, non-obvious decision with lasting consequences.
+Use [TEMPLATE.md] for new, full-length ADRs.
 
 ---
 
