@@ -22,9 +22,10 @@ Providers currently implemented: GCS, Dropbox (filesystem sync), local filesyste
 
 | Repo | Description |
 |------|-------------|
-| [`spec`](https://github.com/dropchannel/spec) | System specification: DockProvider interface, protocol registry, dispatch rules, security model |
+| [`dropchannel`](https://github.com/dropchannel/dropchannel) | System specification: DockProvider interface, protocol registry, dispatch rules, security model, runtime observability layer, and organization-level ADR governance. |
 | [`tideway-protocol`](https://github.com/dropchannel/tideway-protocol) | Tideway protocol spec: hold-and-cascade propagation, turn-taking w/ ACK cascade |
 | [`riverway-protocol`](https://github.com/dropchannel/riverway-protocol) | Riverway protocol spec: unidirectional, overwrite-always, no ACK |
+| [`dc-monitor`](https://github.com/dropchannel/dc-monitor) | Implementation-agnostic topology visualizer — any conformant implementation can feed it by emitting telemetry blobs |
 | [`dropchannel-py`](https://github.com/dropchannel/dropchannel-py) | Python reference implementation: four packages (`dropchannel-channel`, `dropchannel-endpoint`, `dropchannel-raft`, `dropchannel-server`) |
 
 ## Design principles
@@ -43,4 +44,4 @@ Active development. The Python implementation (`dropchannel-py`) has full test c
 
 ## Decisions
 
-Significant architectural decisions are recorded in [`docs/adr/`](../docs/adr/README.md).
+Significant architectural decisions are recorded in the [`dropchannel`](https://github.com/dropchannel/dropchannel) repo.

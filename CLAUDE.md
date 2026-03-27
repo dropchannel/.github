@@ -1,12 +1,7 @@
 # CLAUDE.md — dropchannel/.github
 
 This repo is the GitHub org-level community health repository for `github.com/dropchannel`.
-It holds the org profile page, architectural decision records, and planning documents.
-It does **not** contain runnable code or tests.
-
-**Naming note:** Numerous aspects of the DropChannel system and protocols have been
-renamed as part of ADR-037. All ADR-related content specific to versions 000-036
-use old names — do not update them.
+It holds the org profile page. It does **not** contain runnable code or tests.
 
 **Links note:** Cross-repo links (to other repos in the DropChannel org) use
 <https://github.com/dropchannel/> as the URL root. Intra-repo links use relative URLs.
@@ -18,15 +13,12 @@ use old names — do not update them.
 | Path | Purpose |
 |------|---------|
 | `profile/README.md` | Org profile page (rendered by GitHub at `github.com/dropchannel`) |
-| `docs/adr/README.md` | Master ADR index — all 37 ADRs, grouped by spec version |
-| `docs/adr/ADR-NNN.md` | Individual ADR documents (only a few written so far) |
-| `docs/wip/channel-provider-candidates.md` | Candidate storage backends under consideration |
 
 ---
 
-## Vocabulary (ADR-037)
+## Vocabulary
 
-The system uses a **Waterway metaphor**. Use these terms consistently in all docs and ADRs.
+The system uses a **Waterway metaphor**. Use these terms consistently in all docs.
 
 | Term | Meaning | Retired term |
 |------|---------|--------------|
@@ -50,7 +42,7 @@ The system uses a **Waterway metaphor**. Use these terms consistently in all doc
 |--------|----------|---------|
 | `tideway-` | Tideway | Turn-passing, bidirectional, hold-and-cascade, ACK cascade. Replaces Winch + Piston. |
 | `riverway-` | Riverway | Unidirectional, overwrite-always, no ACK. Replaces Conveyer. |
-| `telemetry-` | Riverway (functional alias) | External monitoring side-channel. Status TBD — see ADR-037 open item 1. |
+| `telemetry-` | Riverway (functional alias) | External monitoring side-channel. Status TBD — see ADR-0037 open item 1. |
 | `heartbeat-` | Meta Waterway | Per-hop liveness chain on meta Waterways. Plaintext. |
 
 Unrecognized prefix → halt and log. Never silently skip.
@@ -68,7 +60,7 @@ Unrecognized prefix → halt and log. Never silently skip.
 
 ---
 
-## DockProvider interface (ADR-037)
+## DockProvider interface
 
 ```python
 # Primary operations
@@ -87,30 +79,11 @@ meta_list(channel, waterway) → list[str]
 
 ---
 
-## ADR format
+## Working in this repository
 
-Standard sections: **Title, Status, Date, Deciders, Context, Decision, Consequences.**
+**Keeping CLAUDE.md current:** When updating profile/README.md, update CLAUDE.md to reflect the new state.
 
-The three tiers:
-
-- **Full ADR** — load-bearing decisions where the Consequences section is the point. Write as individual `ADR-NNN.md`.
-- **Short ADR** — clear rationale, fits in 2–3 paragraphs. Individual file.
-- **Log entry** — table row in `docs/adr/README.md` is sufficient.
-
-Priority candidates for full ADR treatment: 008, 010, 017, 021, 033.
-
-Individual ADR files (`ADR-001.md` through `ADR-035.md`) have not been written yet —
-`docs/adr/README.md` (the master index) is the current extent of ADR content.
-ADR-036 and ADR-037 have individual files.
-
-The 35 earlier ADRs have not been triaged into full / short / log-entry tiers.
-
-**Starting a new ADR-writing session:** provide `docs/adr/README.md`,
-then specify which ADRs to write and at what depth. Example:
-> "Read CLAUDE.md and docs/adr/README.md. Write full ADR documents for ADRs 008, 010,
-> and 017. Use the standard ADR format: Title, Status, Context, Decision, Consequences."
-
-**Keeping CLAUDE.md current:** When writing new ADRs, update CLAUDE.md to reflect the new state — in particular the priority candidates list and the written-ADR status noted above.
+The governance/ADR repository was previously named `spec/` and is now named `dropchannel/` — links should use `https://github.com/dropchannel/dropchannel`.
 
 ---
 
