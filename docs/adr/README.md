@@ -94,3 +94,4 @@ Use [TEMPLATE.md] for new, full-length ADRs.
 | # | Title | Decision | Alternatives considered |
 |---|-------|----------|------------------------|
 | [036](./ADR-036.md) | Agent merged into dropchannel-node rather than separate package |  Merge the Agent into dropchannel-node as an agent/ submodule. Do not create a separate dropchannel-agent package. | Separate dropchannel-agent package (incorrect deployment unit); Threads instead of subprocesses (would have affected placement) |
+| [037](./ADR-037.md) | Unified Vocabulary and Protocol Renaming | Adopt a waterway system metaphor as the unified conceptual framework for all DropChannel structural and protocol terminology.  | Maritime shipping metaphor (diluted core concept of passive delivery) |

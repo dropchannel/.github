@@ -1,4 +1,4 @@
-# ChannelProvider Candidates — Deferred Assessment
+# DockProvider Candidates — Deferred Assessment
 
 *Captured from design exploration session. Not a spec. For later evaluation and prioritization.*
 
@@ -6,17 +6,17 @@
 
 ## Context
 
-The existing ChannelProvider implementations are: `gcs`, `dropbox`, `local`, `httprelay`.
+The existing Dock implementations are: `gcs`, `dropbox`, `local`, `httprelay`.
 
-This session explored additional backend candidates, with a focus on old, stable, battle-tested file/storage protocols. The ChannelProvider interface requirements are minimal:
+This session explored additional backend candidates, with a focus on old, stable, battle-tested file/storage protocols. The DockProvider interface requirements are minimal:
 
-- `write(channel_id, slot, data) -> bool` — write only if slot empty (atomic if possible)
-- `peek(channel_id, slot) -> bytes|None` — non-consuming read
-- `read(channel_id, slot) -> bytes|None` — consuming read (terminating endpoint only)
-- `exists(channel_id, slot) -> bool` — primary polling operation
-- `delete(channel_id, slot) -> None` — idempotent; used in ACK cascade
+- `write(channel, waterway, filename, data) -> bool` — write only if filename absent (atomic if possible)
+- `peek(channel, waterway, filename) -> bytes|None` — non-consuming read
+- `read(channel, waterway, filename) -> bytes|None` — consuming read (terminating endpoint only)
+- `exists(channel, waterway, filename) -> bool` — primary polling operation
+- `delete(channel, waterway, filename) -> None` — idempotent; used in ACK cascade
 
-The ACK cascade imposes one non-obvious requirement: **a node must be able to poll a slot it wrote on a *remote* store and detect that a third party has deleted it.** This rules out backends where slot identity is server-assigned and opaque to the writer.
+The ACK cascade imposes one non-obvious requirement: **a Raft must be able to poll a Waterway it wrote on a *remote* store and detect that a third party has deleted it.** This rules out backends where Waterway identity is server-assigned and opaque to the writer.
 
 ---
 
@@ -26,9 +26,9 @@ The ACK cascade imposes one non-obvious requirement: **a node must be able to po
 
 **Status: Recommended for implementation**
 
-File semantics map cleanly to the ChannelProvider interface. Atomic write via temp-file + rename (`SSH_FXP_RENAME`). Strong auth via SSH keys — no credential exposure. Widely deployed on hosting infrastructure. Python `paramiko` library provides a clean implementation path.
+File semantics map cleanly to the DockProvider interface. Atomic write via temp-file + rename (`SSH_FXP_RENAME`). Strong auth via SSH keys — no credential exposure. Widely deployed on hosting infrastructure. Python `paramiko` library provides a clean implementation path.
 
-ACK cascade: no issues. Slot identity is a filepath chosen by the writer; `exists()` is a stat call on that path.
+ACK cascade: no issues. Waterway identity is a filepath chosen by the writer; `exists()` is a stat call on that path.
 
 **Known concerns:**
 
@@ -49,7 +49,7 @@ ACK cascade: no issues. Slot identity is a filepath chosen by the writer; `exist
 
 HTTP-based (RFC 4918). Methods map directly: `PUT` = write, `GET` = peek/read, `HEAD` = exists (no body transfer), `DELETE` = delete. Traverses proxies and firewalls trivially (port 443). `LOCK`/`UNLOCK` not used.
 
-ACK cascade: no issues. Slot identity is a URL path chosen by the writer.
+ACK cascade: no issues. Waterway identity is a URL path chosen by the writer.
 
 Deployment targets with free tiers: Nextcloud, ownCloud, Box, many NAS devices (Synology, QNAP), Apache `mod_dav`.
 
@@ -62,7 +62,7 @@ Deployment targets with free tiers: Nextcloud, ownCloud, Box, many NAS devices (
 **Open questions:**
 
 - Audit `If-None-Match: *` support across target server implementations (Nextcloud, Apache mod_dav, nginx WebDAV module)
-- Determine whether the TOCTOU gap on write is acceptable given the two-party, cooperative-node threat model
+- Determine whether the TOCTOU gap on write is acceptable given the two-party, cooperative-Raft threat model
 
 ---
 
@@ -72,7 +72,7 @@ Deployment targets with free tiers: Nextcloud, ownCloud, Box, many NAS devices (
 
 File semantics work. Atomic write requires `STOR` to temp file + `RNFR`/`RNTO` rename — same pattern as SFTP but more cumbersome. Widely deployed on shared hosting.
 
-ACK cascade: no issues (same filepath-based slot identity as SFTP).
+ACK cascade: no issues (same filepath-based Waterway identity as SFTP).
 
 **Known concerns:**
 
@@ -88,15 +88,15 @@ ACK cascade: no issues (same filepath-based slot identity as SFTP).
 
 **Status: Interesting — requires design decision before implementation**
 
-Unorthodox but genuinely workable. Email folders as slot containers; messages as slot contents. One folder per slot (`{channel_id}.recv`, `{channel_id}.send`). Slot occupancy = message count in folder (0 or 1). `APPEND` = write, `FETCH` = peek/read, folder `EXISTS` response count = exists(), `STORE \Deleted` + `EXPUNGE` = delete.
+Unorthodox but genuinely workable. Email folders as Waterway containers; messages as Waterway contents. One folder per Waterway (`{channel}.{waterway}.upper`, `{channel}.{waterway}.lower`). Waterway occupancy = message count in folder (0 or 1). `APPEND` = write, `FETCH` = peek/read, folder `EXISTS` response count = exists(), `STORE \Deleted` + `EXPUNGE` = delete.
 
-This design restores stateless restartability: a restarted node inspects both folders by message count, no UID tracking needed.
+This design restores stateless restartability: a restarted Raft inspects both folders by message count, no UID tracking needed.
 
-ACK cascade: **works under the one-folder-per-slot design.** A node polls its send-folder for message count; when it drops to 0, the downstream party has deleted it, triggering the upstream cascade step. UID tracking is not required.
+ACK cascade: **works under the one-folder-per-Waterway design.** A Raft polls its send-folder for message count; when it drops to 0, the downstream party has deleted it, triggering the upstream cascade step. UID tracking is not required.
 
 **Known concerns:**
 
-- No conditional APPEND ("write only if folder empty"). Must SELECT, check EXISTS == 0, then APPEND. TOCTOU race window — acceptable under cooperative-node model, notable in spec.
+- No conditional APPEND ("write only if folder empty"). Must SELECT, check EXISTS == 0, then APPEND. TOCTOU race window — acceptable under cooperative-Raft model, notable in spec.
 - Folder isolation semantics are implementation-dependent. Most servers handle one-message-per-folder correctly but this is not RFC-guaranteed.
 - Custom folder naming may be subject to server-imposed restrictions or normalization (e.g., case folding, namespace prefixes like `INBOX.`).
 - Connection overhead: per-poll TCP+TLS handshake unless connection is held open. IMAP IDLE not used (push model incompatible with outbound-only polling).
@@ -132,7 +132,7 @@ Object storage semantics are essentially the same as GCS. Conditional PUT via `I
 
 **Status: Niche — home NAS hop use case only**
 
-File semantics work. Python `smbprotocol` library. Good fit for a home NAS (Synology, QNAP, TrueNAS) acting as a hop node on the home network segment.
+File semantics work. Python `smbprotocol` library. Good fit for a home NAS (Synology, QNAP, TrueNAS) acting as a hop Raft on the home network segment.
 
 **Known concerns:**
 
@@ -156,7 +156,7 @@ No encryption without a VPN tunnel. LAN-only. Concurrent-write safety is server-
 
 **Status: Discarded**
 
-Client-initiated writes are not part of the Gopher protocol. Read-only from the client side. Not viable as a ChannelProvider without implementing a custom server, at which point Gopher is not meaningfully in use.
+Client-initiated writes are not part of the Gopher protocol. Read-only from the client side. Not viable as a DockProvider without implementing a custom server, at which point Gopher is not meaningfully in use.
 
 ---
 
