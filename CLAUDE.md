@@ -8,6 +8,9 @@ It does **not** contain runnable code or tests.
 renamed as part of ADR-037. All ADR-related content specific to versions 000-036
 use old names — do not update them.
 
+**Links note:** Cross-repo links (to other repos in the DropChannel org) use
+<https://github.com/dropchannel/> as the URL root. Intra-repo links use relative URLs.
+
 ---
 
 ## What lives here
@@ -17,7 +20,7 @@ use old names — do not update them.
 | `profile/README.md` | Org profile page (rendered by GitHub at `github.com/dropchannel`) |
 | `docs/adr/README.md` | Master ADR index — all 37 ADRs, grouped by spec version |
 | `docs/adr/ADR-NNN.md` | Individual ADR documents (only a few written so far) |
-| `docs/channel-provider-candidates.md` | Candidate storage backends under consideration |
+| `docs/wip/channel-provider-candidates.md` | Candidate storage backends under consideration |
 
 ---
 
@@ -25,22 +28,19 @@ use old names — do not update them.
 
 The system uses a **Waterway metaphor**. Use these terms consistently in all docs and ADRs.
 
-| Term | Meaning |
-|------|---------|
-| **Channel** | Named path between two fixed endpoints. Namespace for Waterways. |
-| **Waterway** | A flow path within a Channel. Protocol-typed via name prefix. |
-| **Raft** | Forwarding participant. Crypto-blind, passive, no independent agency. (Old: Node) |
-| **Dock / DockProvider** | A storage backend (GCS, Dropbox, local, httprelay). (Old: ChannelProvider) |
-| **Upper Dock** | Dock on the initiator's side. Fixed — never swaps. (Old: recv_backend) |
-| **Lower Dock** | Dock on the responder's side. Fixed — never swaps. (Old: send_backend) |
-| **Raft ID** | Stable unique identifier for a Raft/host. (Old: node_id) |
-| **Agent** | Host-level supervisor process. One per physical host. Unchanged. |
-| **Worker** | Runtime subprocess that runs a Raft. Unchanged. |
-| **Endpoint** | Terminating participant (Client A/B). Holds the shared secret. Unchanged. |
-| **Relay** | Network service exposing a Dock over HTTP. Unchanged. |
-
-**Do not use** old terms: slot, node (as forwarding participant), channel_id (as param name),
-recv_backend, send_backend, node_id, winch, conveyer, ring, piston.
+| Term | Meaning | Retired term |
+|------|---------|--------------|
+| **Channel** | Named path between two fixed endpoints. Namespace for Waterways. | `channel_id` (as param) |
+| **Waterway** | A flow path within a Channel. Protocol-typed via name prefix. | slot, reach |
+| **Raft** | Forwarding participant. Crypto-blind, passive, no independent agency. | Node |
+| **Dock / DockProvider** | A storage backend (GCS, Dropbox, local, httprelay). | ChannelProvider |
+| **Upper Dock** | Dock on the initiator's side. Fixed — never swaps. | recv_backend |
+| **Lower Dock** | Dock on the responder's side. Fixed — never swaps. | send_backend |
+| **Raft ID** | Stable unique identifier for a Raft/host. | node_id |
+| **Agent** | Host-level supervisor process. One per physical host. | — |
+| **Worker** | Runtime subprocess that runs a Raft. | — |
+| **Endpoint** | Terminating participant (Client A/B). Holds the shared secret. | — |
+| **Relay** | Network service exposing a Dock over HTTP. | — |
 
 ---
 
@@ -110,13 +110,7 @@ then specify which ADRs to write and at what depth. Example:
 > "Read CLAUDE.md and docs/adr/README.md. Write full ADR documents for ADRs 008, 010,
 > and 017. Use the standard ADR format: Title, Status, Context, Decision, Consequences."
 
----
-
-## Current branch
-
-`waterway-naming-changes` — implementing ADR-037 vocabulary rename across this repo.
-Recent commits renamed Tide→Tideway, Current→Riverway, Run/head/tail→Waterway/Upper/Lower,
-removed ring/piston references, renamed Winch→Tide (now Tideway).
+**Keeping CLAUDE.md current:** When writing new ADRs, update CLAUDE.md to reflect the new state — in particular the priority candidates list and the written-ADR status noted above.
 
 ---
 
